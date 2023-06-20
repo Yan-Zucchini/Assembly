@@ -1,10 +1,13 @@
 .data
 ola: .asciiz "Bem vindo a nossa calculadora em Assembly MIPS, Escolha uma das opções abaixo para começar:\n"
-menu: .asciiz "\n A: adicao \n S: subtracao \n M: multiplicacao \n D: divisao \n X: encerra o programa \n"
+menu: .asciiz "\n A: adicao \n S: subtracao \n M: multiplicacao \n D: divisao \n P: potência\n X: encerra o programa \n"
 warning: .asciiz "Escolha um caractere válido\n\n"
 linha_vazia: .asciiz "\n\n"
 adicao_text: .asciiz "Escolha os dois numeros que serão somados: \n"
 divisao_text: .asciiz "Escolha os dois numeros para que seja feita a divisão \n"
+subtracao_text: .asciiz "Escolha os dois numeros que serão subtraidos\n"
+multiplicacao_text: .asciiz "Escolha os dois numeros que serão multiplicados\n"
+potencia_text: .asciiz "Escolha a base e o expoente\n"
 result: .asciiz "O resultado da operação é: "
 
 .text
@@ -32,6 +35,9 @@ main:
 
         beq $t0, 'A', adicao
         beq $t0, 'a', adicao
+
+        beq $t0, 'S', subtracao
+        beq $t0, 's', subtracao
 
         beq $t0, 'M', multiplicacao
         beq $t0, 'm', multiplicacao
@@ -94,52 +100,90 @@ main:
 
         subtracao:
             # Mostra a mesagem pro usuário 
-
+            li $v0, 4
+            la $a0, subtracao_text
+            syscall
+            
             # Lê o primeiro número digitado
+            li $v0, 5
+            syscall
 
             # Move o primeiro numero para $t1
+            move $t1, $v0
 
             # Lê o segundo numero digitado
+            li $v0, 5
+            syscall
 
             # Move o segundo numero para $t2
+            move $t2, $v0
 
             # Mostra a mensgem de resultado
+            li $v0, 4
+            la $a0, result
+            syscall
 
             # Realiza a subtração
+            sub $t3, $t1, $t2
 
             # Move o resultado da subtração para $a0
+            move $a0, $t3
 
             # Mostra o resultado 
+            li $v0, 1
+            syscall
 
             # Imprime uma linha vazia
+            li $v0, 4
+            la $a0, linha_vazia
+            syscall
 
-            # retorna para o começo do laço
+            #retorna para o começo do laço
             j loop
             
             
 
         multiplicacao:
             # Mostra a mesagem pro usuário 
-
+            li $v0, 4
+            la $a0, multiplicacao_text
+            syscall
+            
             # Lê o primeiro número digitado
+            li $v0, 5
+            syscall
 
             # Move o primeiro numero para $t1
+            move $t1, $v0
 
             # Lê o segundo numero digitado
+            li $v0, 5
+            syscall
 
             # Move o segundo numero para $t2
+            move $t2, $v0
 
             # Mostra a mensgem de resultado
+            li $v0, 4
+            la $a0, result
+            syscall
 
             # Realiza a multiplicação
+            mul $t3, $t1, $t2
 
             # Move o resultado da multiplicação para $a0
+            move $a0, $t3
 
             # Mostra o resultado 
+            li $v0, 1
+            syscall
 
             # Imprime uma linha vazia
+            li $v0, 4
+            la $a0, linha_vazia
+            syscall
 
-            # retorna para o começo do laço
+            #retorna para o começo do laço
             j loop
             
 
@@ -189,24 +233,52 @@ main:
 
         potencia:
             # Mostra a mesagem pro usuário 
+            li $v0, 4
+            la $a0, potencia_text
+            syscall
 
             # Lê o primeiro número digitado
+            li $v0, 5
+            syscall
 
             # Move o primeiro numero para $t1
+            move $t1, $v0
 
             # Lê o segundo numero digitado
+            li $v0, 5
+            syscall
 
             # Move o segundo numero para $t2
+            move $t2, $v0
 
             # Mostra a mensgem de resultado
+            li $v0, 4
+            la $a0, result
+            syscall
 
             # Realiza a potência
+            li $t3, 1
+            li $t4, 0
+            
 
-            # Move o resultado da potência para $a0
+            while:
+                beq $t4, $t2, saida
+                addi $t4, $t4, 1
+                mul $t3, $t3, $t1
+                j while
 
-            # Mostra o resultado 
+            # mostra o resultado
+            saida: 
+                li $v0, 1
+                move $a0, $t3
+                syscall
+
+                j loop
 
             # Imprime uma linha vazia
+            li $v0, 4
+            la $a0, linha_vazia
+            syscall
 
             # retorna para o começo do laço
             j loop
