@@ -15,6 +15,7 @@ result: .asciiz "O resultado da operação é: "
 .globl main
 main:
 
+    # Mensagem de boas vindas
     li $v0, 4
     la $a0, ola
     syscall
@@ -22,15 +23,20 @@ main:
     j loop 
     
     loop:
+        
+        # Mostra o menu na tela
         li $v0, 4
         la $a0, menu
         syscall
 
+        # Le um caracter digitado pelo usuário
         li $v0, 12
         syscall
         
+        # Move esse caracter lido para o registrador $t0
         move $t0, $v0       
 
+        # Checa qual opção o usuário escolheu e o desvia para a função correta
         beq $t0, 'X', end
         beq $t0, 'x', end
 
@@ -49,7 +55,7 @@ main:
         beq $t0, 'P', potencia
         beq $t0, 'p', potencia
         
-
+        # Mensagem de aviso caso o usuário nao escolha uma opçao correta
         li $v0, 4
         la $a0, warning
         syscall
@@ -209,6 +215,7 @@ main:
                 # Move o segundo numero para $t2
                 move $t2, $v0
 
+                # Se $t2 for igual a zero desvia para a função de erro
                 beqz $t2, err
 
             # Mostra a mensgem de resultado
@@ -217,7 +224,6 @@ main:
             syscall
 
             # Realiza a divisão
-            
             div $t3, $t1, $t2
             
             # Move o resultado da divisão para $a0
@@ -261,19 +267,22 @@ main:
             la $a0, result
             syscall
 
-            # Realiza a potência
+            # Declara os valores necessários para a execução da potência e do loop respectivamente
             li $t3, 1
             li $t4, 0
             
 
             while:
+                # Controla o laço
                 beq $t4, $t2, saida
                 addi $t4, $t4, 1
+
+                #realiza a multiplicação
                 mul $t3, $t3, $t1
                 j while
 
-            # mostra o resultado
             saida: 
+                # mostra o resultado
                 li $v0, 1
                 move $a0, $t3
                 syscall
@@ -289,6 +298,7 @@ main:
             j loop
 
             err: 
+                # Pede para o usuário digitar o divisor novamente
                 li $v0, 4
                 la $a0, excecao
                 syscall
@@ -297,6 +307,7 @@ main:
            
 
         end: 
+        # Encerra o programa
         li $v0, 10
         syscall
 
