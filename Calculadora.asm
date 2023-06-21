@@ -4,10 +4,11 @@ menu: .asciiz "\n A: adicao \n S: subtracao \n M: multiplicacao \n D: divisao \n
 warning: .asciiz "Escolha um caractere válido\n\n"
 linha_vazia: .asciiz "\n\n"
 adicao_text: .asciiz "Escolha os dois numeros que serão somados: \n"
-divisao_text: .asciiz "Escolha os dois numeros para que seja feita a divisão \n"
+divisao_text: .asciiz "Escolha o dividendo e o divisor respectivamente \n"
 subtracao_text: .asciiz "Escolha os dois numeros que serão subtraidos\n"
 multiplicacao_text: .asciiz "Escolha os dois numeros que serão multiplicados\n"
 potencia_text: .asciiz "Escolha a base e o expoente\n"
+excecao: .asciiz "Não é possivel realizar divisão por zero, informe novamente o divisor\n"
 result: .asciiz "O resultado da operação é: "
 
 .text
@@ -200,12 +201,15 @@ main:
             # Move o primeiro numero para $t1
             move $t1, $v0
 
-            # Lê o segundo numero digitado
-            li $v0, 5
-            syscall
+            catch: 
+                # Lê o segundo numero digitado
+                li $v0, 5
+                syscall
 
-            # Move o segundo numero para $t2
-            move $t2, $v0
+                # Move o segundo numero para $t2
+                move $t2, $v0
+
+                beqz $t2, err
 
             # Mostra a mensgem de resultado
             li $v0, 4
@@ -213,8 +217,9 @@ main:
             syscall
 
             # Realiza a divisão
+            
             div $t3, $t1, $t2
-
+            
             # Move o resultado da divisão para $a0
             move $a0, $t3
 
@@ -282,6 +287,13 @@ main:
 
             # retorna para o começo do laço
             j loop
+
+            err: 
+                li $v0, 4
+                la $a0, excecao
+                syscall
+
+                j catch
            
 
         end: 
